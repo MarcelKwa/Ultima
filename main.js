@@ -335,14 +335,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* Contactformulier: front-end only, geen backend gekoppeld */
+  /* Contactformulier: verstuurt naar /api/contact (Vercel serverless function + Resend) */
   const contactForm = document.querySelector('[data-contact-form]');
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    const submitBtn = contactForm.querySelector('[data-submit-btn]');
+    const confirmation = document.querySelector('[data-form-confirmation]');
+    const errorBox = document.querySelector('[data-form-error]');
+    const submitBtnDefaultText = submitBtn ? submitBtn.textContent : '';
+
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const confirmation = document.querySelector('[data-form-confirmation]');
-      contactForm.style.display = 'none';
-      if (confirmation) confirmation.style.display = 'block';
+      if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
+      if (confirmation) confirmation.style.display = 'none';
+
+      const formData = new FormData(contactForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Bezig met versturen…';
+      }
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Het bericht kon niet worden verzonden. Probeer het later opnieuw.');
+        }
+
+        contactForm.reset();
+        contactForm.style.display = 'none';
+        if (confirmation) confirmation.style.display = 'block';
+      } catch (err) {
+        if (errorBox) {
+          errorBox.textContent = err.message || 'Er ging iets mis. Probeer het later opnieuw.';
+          errorBox.style.display = 'block';
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitBtnDefaultText;
+        }
+      }
     });
   }
 

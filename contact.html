@@ -61,6 +61,11 @@
         <h2>Contactformulier</h2>
 
         <form data-contact-form novalidate>
+          <div class="form-field" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+            <label for="website">Laat dit veld leeg</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="form-row">
             <div class="form-field">
               <label for="voornaam">Voornaam</label>
@@ -92,11 +97,13 @@
             <textarea id="bericht" name="bericht" rows="5" required></textarea>
           </div>
 
-          <button type="submit" class="btn btn--primary">Bericht versturen</button>
+          <button type="submit" class="btn btn--primary" data-submit-btn>Bericht versturen</button>
         </form>
 
+        <div data-form-error style="display:none; border-left-color:#B3261E;" class="notice-banner"></div>
+
         <div data-form-confirmation style="display:none;" class="notice-banner">
-          Bedankt voor je bericht! Dit is een demo-formulier zonder actieve verzending — koppel dit formulier aan een backend of formulierdienst om berichten daadwerkelijk te ontvangen.
+          Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.
         </div>
       </div>
 
